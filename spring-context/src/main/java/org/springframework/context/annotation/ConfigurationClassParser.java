@@ -131,8 +131,6 @@ class ConfigurationClassParser {
 
 	private final Map<ConfigurationClass, ConfigurationClass> configurationClasses = new LinkedHashMap<>();
 
-	private final Map<String, ConfigurationClass> knownSuperclasses = new HashMap<>();
-
 	private final List<String> propertySourceNames = new ArrayList<>();
 
 	private final ImportStack importStack = new ImportStack();
@@ -235,7 +233,6 @@ class ConfigurationClassParser {
 				// Explicit bean definition found, probably replacing an import.
 				// Let's remove the old one and go with the new one.
 				this.configurationClasses.remove(configClass);
-				this.knownSuperclasses.values().removeIf(configClass::equals);
 			}
 		}
 
@@ -323,9 +320,7 @@ class ConfigurationClassParser {
 		// Process superclass, if any
 		if (sourceClass.getMetadata().hasSuperClass()) {
 			String superclass = sourceClass.getMetadata().getSuperClassName();
-			if (superclass != null && !superclass.startsWith("java") &&
-					!this.knownSuperclasses.containsKey(superclass)) {
-				this.knownSuperclasses.put(superclass, configClass);
+			if (superclass != null && !superclass.startsWith("java")) {
 				// Superclass found, return its annotation metadata and recurse
 				return sourceClass.getSuperClass();
 			}
